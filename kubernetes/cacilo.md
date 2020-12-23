@@ -8,3 +8,10 @@
     - RR(Router Reflector)模式
         - 就是在网络中指定一个或多个 BGP Speaker 作为反射路由（Router Reflector），RR与所有的 BGP Speaker 建立 bgp 连接。每个BGP Speaker只与RR建立连接，交换路由信息就能获得全网的路由信息。Calico 中通过Global Peer来实现RR模式。
         - RR 的基本思想是选择一部分节点（一个或者多个）作为 Global BGP Peer，它们和所有的其他节点互联来交换路由信息，其他的节点只需要和 Global BGP Peer 相连就行，不需要之间再两两连接。更多的组网模式也是支持的，不管怎么组网，最核心的思想就是所有的节点能获取到整个集群的路由信息。
+# calico组件
+- libnetwork-plugin 
+    - 是 calico 提供的 docker 网络插件，主要提供的是 IP 管理和网络管理的功能。
+    - 默认情况下，当网络中出现第一个容器时，calico 会为容器所在的节点分配一段子网（子网掩码为 /26，比如192.168.196.128/26），后续出现在该节点上的容器都从这个子网中分配 IP 地址。这样做的好处是能够缩减节点上的路由表的规模，按照这种方式节点上 2^6 = 64 个 IP 地址只需要一个路由表项就行，而不是为每个 IP 单独创建一个路由表项。节点上创建的子网段可以在etcd 中 /calico/ipam/v2/host/<node_name>/ipv4/block/ 看到。
+    - calico 还允许创建容器的时候指定 IP 地址，如果用户指定的 IP 地址不在节点分配的子网段中，calico 会专门为该地址添加一个 /32 的网段。
+        - kubeadm默认的etcd部署方式(也未用自定义配置)，etcd中并未找到/calico*相关的的数据；-------------待考证；
+        
