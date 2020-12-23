@@ -28,5 +28,15 @@
         - config：生成的配置文件最终放的目录;并未找到该路径以及相关的的数据；-------------待考证；
         - templates：模板文件，里面包括了很多变量占位符，最终会替换成 etcd 中具体的数据
             - 它会监听 etcd 的 /calico/bgp/v1 路径，一旦发现更新，就用其中的内容更新模板文件 bird.cfg.mesh.template，把新生成的文件放在 /etc/calico/confd/config/bird.cfg，文件改变之后还会运行 reload_cmd 指定的命令重启 bird 程序。并未找到该路径以及相关的的数据；-------------待考证；
+- felix 
+    - 负责最终网络相关的配置，也就是容器网络在 linux 上的配置工作；
+        - 更新节点上的路由表项
+        - 更新节点上的 iptables 表项
+    - 它的主要工作是从 etcd 中读取网络的配置，然后根据配置更新节点的路由和 iptables，felix 的代码在 http://github.com/calico/felix。
+
+# 总结calico1工作内容
+- 分配和管理 IP
+- 配置上容器的 veth pair 和容器内默认路由
+- 根据集群网络情况实时更新节点上路由表
 
 
