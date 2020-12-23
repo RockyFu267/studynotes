@@ -13,20 +13,20 @@
     - 是 calico 提供的 docker 网络插件，主要提供的是 IP 管理和网络管理的功能。
     - 默认情况下，当网络中出现第一个容器时，calico 会为容器所在的节点分配一段子网（子网掩码为 /26，比如192.168.196.128/26），后续出现在该节点上的容器都从这个子网中分配 IP 地址。这样做的好处是能够缩减节点上的路由表的规模，按照这种方式节点上 2^6 = 64 个 IP 地址只需要一个路由表项就行，而不是为每个 IP 单独创建一个路由表项。节点上创建的子网段可以在etcd 中 /calico/ipam/v2/host/<node_name>/ipv4/block/ 看到。
     - calico 还允许创建容器的时候指定 IP 地址，如果用户指定的 IP 地址不在节点分配的子网段中，calico 会专门为该地址添加一个 /32 的网段。
-        - kubeadm默认的etcd部署方式(也未用自定义配置)，$\color{red}{etcd中并未找到/calico*相关的的数据；-------------待考证}$；
+        - kubeadm默认的etcd部署方式(也未用自定义配置)，<font color=#FF0000 >etcd中并未找到/calico*相关的的数据；-------------待考证</font>；
 
 - BIRD（BIRD Internet Routing Daemon） 
     - 是一个常用的网络路由软件，支持很多路由协议（BGP、RIP、OSPF等）。它会在每台宿主机上运行，calico 用它在实现主机间传播路由信息。
     - BIRD 对应的配置文件在 /etc/calico/confd/config/ 目录;
-       - kubeadm默认的etcd部署方式(也未用自定义配置)，$\color{red}{并未找到该路径以及相关的的数据；-------------待考证}$；
+       - kubeadm默认的etcd部署方式(也未用自定义配置)，<font color=#FF0000 >并未找到该路径以及相关的的数据；-------------待考证</font>；
        - 只在calico的daemonset的node里找到了 confd 文件夹和 felix.cfg
 
 - confd
     - 是一个简单的配置管理工具。bird 的配置文件会根据用户设置的变化而变化，因此需要一种动态的机制来实时维护配置文件并通知 bird 使用最新的配置，这就是 confd 的工作。它会监听 etcd 的数据，用来更新 bird 的配置文件，并重新启动 bird 进程让它加载最新的配置文件。
     - confd 的工作目录是 /etc/calico/confd;
         - conf.d：confd 需要读取的配置文件，每个配置文件告诉 confd 模板文件在什么，最终生成的文件应该放在什么地方，更新时要执行哪些操作等
-        - config：生成的配置文件最终放的目录;$\color{red}{并未找到该路径以及相关的的数据；-------------待考证}$；
+        - config：生成的配置文件最终放的目录;<font color=#FF0000 >并未找到该路径以及相关的的数据；-------------待考证</font>；
         - templates：模板文件，里面包括了很多变量占位符，最终会替换成 etcd 中具体的数据
-            - 它会监听 etcd 的 /calico/bgp/v1 路径，一旦发现更新，就用其中的内容更新模板文件 bird.cfg.mesh.template，把新生成的文件放在 /etc/calico/confd/config/bird.cfg，文件改变之后还会运行 reload_cmd 指定的命令重启 bird 程序。$\color{red}{并未找到该路径以及相关的的数据；-------------待考证}$；
+            - 它会监听 etcd 的 /calico/bgp/v1 路径，一旦发现更新，就用其中的内容更新模板文件 bird.cfg.mesh.template，把新生成的文件放在 /etc/calico/confd/config/bird.cfg，文件改变之后还会运行 reload_cmd 指定的命令重启 bird 程序。<font color=#FF0000 >并未找到该路径以及相关的的数据；-------------待考证</font>；
 
 
