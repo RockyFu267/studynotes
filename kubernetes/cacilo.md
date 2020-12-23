@@ -34,7 +34,7 @@
         - 更新节点上的 iptables 表项
     - 它的主要工作是从 etcd 中读取网络的配置，然后根据配置更新节点的路由和 iptables，felix 的代码在 http://github.com/calico/felix。
 
-# 总结calico1工作内容
+# 总结calico工作内容
 - 分配和管理 IP
 - 配置上容器的 veth pair 和容器内默认路由
 - 根据集群网络情况实时更新节点上路由表
