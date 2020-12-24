@@ -39,6 +39,8 @@
 - 配置上容器的 veth pair 和容器内默认路由
 - 根据集群网络情况实时更新节点上路由表
 
+# 目前最大的问题 
+- 我在测试环境的etcd中找不到calico的数据；-------------待考证；
 ## calico命令
 - 获取BGP配置
     - ```calicoctl get BGPConfiguration -o yaml ```
@@ -99,6 +101,19 @@
     - node-role.kubernetes.io/master node角色节点没有这个key
     - route-reflector 如果节点不是rr模式，不会有这个key
     - routeReflectorClusterID 这个是否是RR模式节点特有-------------待考证；(怀疑测试环境目前的问题与这个配置也有关)
+
+## 更改CIDR的方案
+- 添加一个新的ippool
+    - ```
+    apiVersion: projectcalico.org/v3
+    kind: IPPool
+    metadata:
+    name: new-pool
+    spec:
+    cidr: 172.16.0.0/14
+    ipipMode: Always
+    natOutgoing: true
+    ```
 
 
 
