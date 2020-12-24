@@ -63,39 +63,39 @@
         - asNumber  值的含义-------------待考证；
         - nodeToNodeMeshEnabled meshi模式开关；
 - 获取node配置
-```
-apiVersion: projectcalico.org/v3
-kind: Node
-metadata:
-  annotations:
-    projectcalico.org/kube-labels: '{"beta.kubernetes.io/arch":"xxx"}'
-  creationTimestamp: "2111-11-11T11:11:11Z"
-  labels:
-    beta.kubernetes.io/arch: amd64
-    beta.kubernetes.io/os: linux
-    kubernetes.io/arch: amd64
-    kubernetes.io/hostname: xxxxx
-    kubernetes.io/os: linux
-    node-role.kubernetes.io/master: ""
-    route-reflector: "true"
-  name: xxx
-  resourceVersion: "xxxx"
-  uid: xxx-x-x-x-xxx
-spec:
-  addresses:
-  - address: 100.100.11.252/24
-  - address: 100.100.11.252
-  bgp:
-    ipv4Address: 100.100.11.252/24
-    ipv4IPIPTunnelAddr: 192.168.243.192
-    routeReflectorClusterID: 224.0.0.1
-  orchRefs:
-  - nodeName: xxxx
-    orchestrator: k8s
-status:
-  podCIDRs:
-  - xxx.xxx.x.x/xx
-```
+    ```
+    apiVersion: projectcalico.org/v3
+    kind: Node
+    metadata:
+    annotations:
+        projectcalico.org/kube-labels: '{"beta.kubernetes.io/arch":"xxx"}'
+    creationTimestamp: "2111-11-11T11:11:11Z"
+    labels:
+        beta.kubernetes.io/arch: amd64
+        beta.kubernetes.io/os: linux
+        kubernetes.io/arch: amd64
+        kubernetes.io/hostname: xxxxx
+        kubernetes.io/os: linux
+        node-role.kubernetes.io/master: ""
+        route-reflector: "true"
+    name: xxx
+    resourceVersion: "xxxx"
+    uid: xxx-x-x-x-xxx
+    spec:
+    addresses:
+    - address: 100.100.11.252/24
+    - address: 100.100.11.252
+    bgp:
+        ipv4Address: 100.100.11.252/24
+        ipv4IPIPTunnelAddr: 192.168.243.192
+        routeReflectorClusterID: 224.0.0.1
+    orchRefs:
+    - nodeName: xxxx
+        orchestrator: k8s
+    status:
+    podCIDRs:
+    - xxx.xxx.x.x/xx
+    ```
     - node-role.kubernetes.io/master node角色节点没有这个key
     - route-reflector 如果节点不是rr模式，不会有这个key
 
