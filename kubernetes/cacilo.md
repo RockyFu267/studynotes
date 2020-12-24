@@ -97,7 +97,6 @@
     podCIDRs:
     - xxx.xxx.x.x/xx
     ```
-    - node-role.kubernetes.io/master node角色节点没有这个key
     - route-reflector 如果节点不是rr模式，不会有这个key
     - routeReflectorClusterID 这个是否是RR模式节点特有-------------待考证；(怀疑测试环境目前的问题与这个配置也有关)
 
@@ -110,7 +109,9 @@
         name: new-pool
         spec:
         cidr: xxx.xx.0.0/xx
-        ipipMode: Always
+        ipipMode: CrossSubnet
+        nodeSelector: all()
+        vxlanMode: Never
         natOutgoing: true
        ```  
     - apply之后会存在两个IPPool;
