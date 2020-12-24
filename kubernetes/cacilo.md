@@ -43,23 +43,23 @@
 - 获取BGP配置
     - ```calicoctl get BGPConfiguration -o yaml ```
         - ```
-apiVersion: projectcalico.org/v3
-items:
-- apiVersion: projectcalico.org/v3
-  kind: BGPConfiguration
-  metadata:
-    creationTimestamp: "2111-11-11T02:26:06Z"
-    name: default
-    resourceVersion: "xx"
-    uid: xxx-xx-xx-xx-xxx
-  spec:
-    asNumber: 63400
-    logSeverityScreen: Info
-    nodeToNodeMeshEnabled: false
-kind: BGPConfigurationList
-metadata:
-  resourceVersion: "xxx"
-```
+            apiVersion: projectcalico.org/v3
+            items:
+            - apiVersion: projectcalico.org/v3
+            kind: BGPConfiguration
+            metadata:
+                creationTimestamp: "2111-11-11T02:26:06Z"
+                name: default
+                resourceVersion: "xx"
+                uid: xxx-xx-xx-xx-xxx
+            spec:
+                asNumber: 63400
+                logSeverityScreen: Info
+                nodeToNodeMeshEnabled: false
+            kind: BGPConfigurationList
+            metadata:
+            resourceVersion: "xxx"
+            ```
         - asNumber  值的含义-------------待考证；
         - nodeToNodeMeshEnabled meshi模式开关；
 - 获取node配置
@@ -98,5 +98,10 @@ status:
 ```
     - node-role.kubernetes.io/master node角色节点没有这个key
     - route-reflector 如果节点不是rr模式，不会有这个key
+
+
+
+
+
 
 
