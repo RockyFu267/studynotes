@@ -120,18 +120,18 @@
         apiVersion: projectcalico.org/v3
         items:
         - apiVersion: projectcalico.org/v3
-        kind: IPPool
-        metadata:
-            creationTimestamp: "xxxx-xx-xxTxx:xx:xxZ"
-            name: default-ipv4-ippool
-            resourceVersion: "x"
-            uid: x-x-x-x-x
-        spec:
-            blockSize: 26
-            cidr: x.x.0.0/xx
-            ipipMode: CrossSubnet
-            nodeSelector: all()
-            vxlanMode: Never
+            kind: IPPool
+            metadata:
+                creationTimestamp: "xxxx-xx-xxTxx:xx:xxZ"
+                name: default-ipv4-ippool
+                resourceVersion: "x"
+                uid: x-x-x-x-x
+            spec:
+                blockSize: 26
+                cidr: x.x.0.0/xx
+                ipipMode: CrossSubnet
+                nodeSelector: all()
+                vxlanMode: Never
         kind: IPPoolList
         metadata:
         resourceVersion: "xx"
