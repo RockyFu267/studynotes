@@ -105,17 +105,39 @@
 ## 更改CIDR的方案
 - 添加一个新的ippool
     - ```
-    apiVersion: projectcalico.org/v3
-    kind: IPPool
-    metadata:
-    name: new-pool
-    spec:
-    cidr: 172.16.0.0/14
-    ipipMode: Always
-    natOutgoing: true
-    ```
-
-
+        apiVersion: projectcalico.org/v3
+        kind: IPPool
+        metadata:
+        name: new-pool
+        spec:
+        cidr: xxx.xx.0.0/xx
+        ipipMode: Always
+        natOutgoing: true
+       ```  
+    - apply之后会存在两个IPPool;
+- 停用旧的CIDR
+    - ```
+        apiVersion: projectcalico.org/v3
+        items:
+        - apiVersion: projectcalico.org/v3
+        kind: IPPool
+        metadata:
+            creationTimestamp: "xxxx-xx-xxTxx:xx:xxZ"
+            name: default-ipv4-ippool
+            resourceVersion: "x"
+            uid: x-x-x-x-x
+        spec:
+            blockSize: 26
+            cidr: x.x.0.0/xx
+            ipipMode: CrossSubnet
+            nodeSelector: all()
+            vxlanMode: Never
+        kind: IPPoolList
+        metadata:
+        resourceVersion: "xx"
+       ```
+    - 添加配置 disabled: true；停用旧的CIDR
+    
 
 
 
