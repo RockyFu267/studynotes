@@ -83,11 +83,11 @@
     uid: xxx-x-x-x-xxx
     spec:
     addresses:
-    - address: 100.100.11.252/24
-    - address: 100.100.11.252
+    - address: xxx.xxx.xx.xx/xx
+    - address: xxx.xxx.xx.xx
     bgp:
-        ipv4Address: 100.100.11.252/24
-        ipv4IPIPTunnelAddr: 192.168.243.192
+        ipv4Address: xxx.xxx.xx.xxx/xx
+        ipv4IPIPTunnelAddr: xxx.xxx.xxx.xxx
         routeReflectorClusterID: 224.0.0.1
     orchRefs:
     - nodeName: xxxx
