@@ -40,7 +40,7 @@
 - 根据集群网络情况实时更新节点上路由表
 
 # 目前最大的问题 
-- 我在测试环境的etcd中找不到calico的数据；-------------待考证；
+- 我在测试环境的etcd中找不到calico的数据；-------------待考证；(完全不知道测试环境calico的数据存在哪？)
 ## calico命令
 - 获取BGP配置
     - ```
@@ -155,3 +155,5 @@
     - podSubnet 
 - 修改kube-controller-manager配置; -------------待考证；(操作顺序？先改node再改控制组件？)
     - spec.containers.command[cluster-cidr]
+- 修改 /etc/cni/net.d/ 下的 10-calico.conflist和calico-kubeconfig 配置；-------------待考证；(网络上有文档提到该步骤，很怀疑这部操作的必要性，尤其是caico-kubeconfig，这个文件的作用不包括放cidr的配置吧？)
+    - ipv4_pools
