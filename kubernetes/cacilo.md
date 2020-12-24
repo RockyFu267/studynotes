@@ -43,27 +43,26 @@
 - 我在测试环境的etcd中找不到calico的数据；-------------待考证；
 ## calico命令
 - 获取BGP配置
-    - ```calicoctl get BGPConfiguration -o yaml ```
-        - ```
-            apiVersion: projectcalico.org/v3
-            items:
-            - apiVersion: projectcalico.org/v3
-            kind: BGPConfiguration
-            metadata:
-                creationTimestamp: "2111-11-11T02:26:06Z"
-                name: default
-                resourceVersion: "xx"
-                uid: xxx-xx-xx-xx-xxx
-            spec:
-                asNumber: 63400
-                logSeverityScreen: Info
-                nodeToNodeMeshEnabled: false
-            kind: BGPConfigurationList
-            metadata:
-            resourceVersion: "xxx"
-            ```
-        - asNumber  值的含义-------------待考证；
-        - nodeToNodeMeshEnabled meshi模式开关；
+    - ```
+        apiVersion: projectcalico.org/v3
+        items:
+        - apiVersion: projectcalico.org/v3
+        kind: BGPConfiguration
+        metadata:
+            creationTimestamp: "2111-11-11T02:26:06Z"
+            name: default
+            resourceVersion: "xx"
+            uid: xxx-xx-xx-xx-xxx
+        spec:
+            asNumber: 63400
+            logSeverityScreen: Info
+            nodeToNodeMeshEnabled: false
+        kind: BGPConfigurationList
+        metadata:
+        resourceVersion: "xxx"
+        ```
+    - asNumber  值的含义-------------待考证；
+    - nodeToNodeMeshEnabled meshi模式开关；
 - 获取node配置
     ```
     apiVersion: projectcalico.org/v3
@@ -137,9 +136,22 @@
         resourceVersion: "xx"
        ```
     - 添加配置 disabled: true；停用旧的CIDR
-    
-
-
-
-
-
+- 滚动替换node-CIDR参数-------------待考证；(具体的操作方案)
+    - 以下都是目前的假设
+        - 导出机器列表
+        - 规划机器对应IP的map关系，比如
+            - ```
+              node01 172.16.1.0/24
+              node02 172.16.2.0/24
+              ...
+              ```
+        - 准备node-yaml模版 跑个脚本？
+            - 替换 metadata.name
+            - 替换 spec.podCIDR
+            - 替换 spec.podCIDRs
+- 修改kube-proxy配置；-------------待考证；(操作顺序？先改node再改控制组件？)
+    - clusterCIDR
+- 修改kubeadm-config配置;-------------待考证；(操作顺序？先改node再改控制组件？;且是不是只要这里做操作就好，别的组件会监听到这个配置的变更，前提是使用kubeadm部署？)
+    - podSubnet 
+- 修改kube-controller-manager配置; -------------待考证；(操作顺序？先改node再改控制组件？)
+    - spec.containers.command[cluster-cidr]
