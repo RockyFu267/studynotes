@@ -18,8 +18,9 @@
 - BIRD（BIRD Internet Routing Daemon） 
     - 是一个常用的网络路由软件，支持很多路由协议（BGP、RIP、OSPF等）。它会在每台宿主机上运行，calico 用它在实现主机间传播路由信息。
     - BIRD 对应的配置文件在 /etc/calico/confd/config/ 目录;
-       - kubeadm默认的etcd部署方式(也未用自定义配置)，并未找到该路径以及相关的的数据；-------------待考证；
-       - 只在calico的daemonset的node里找到了 confd 文件夹和 felix.cfg
+       - kubeadm默认的etcd部署方式(也未用自定义配置)，并未找到该路径以及相关的的数据；~~ -------------待考证；~~
+            - 相关的配置在daemonset的node找到了
+       - ~~只在calico的daemonset的node里找到了 confd 文件夹和 felix.cfg~~
 
 - confd
     - 是一个简单的配置管理工具。bird 的配置文件会根据用户设置的变化而变化，因此需要一种动态的机制来实时维护配置文件并通知 bird 使用最新的配置，这就是 confd 的工作。它会监听 etcd 的数据，用来更新 bird 的配置文件，并重新启动 bird 进程让它加载最新的配置文件。
@@ -137,7 +138,7 @@
         resourceVersion: "xx"
        ```
     - 添加配置 disabled: true；停用旧的CIDR
-- 滚动替换node-CIDR参数-------------待考证；(具体的操作方案) 
+- 滚动替换node-CIDR参数;~~ -------------待考证；(具体的操作方案) ~~
     - 以下都是目前的假设
         - 导出机器列表
         - 规划机器对应IP的map关系，比如
@@ -150,26 +151,33 @@
             - 替换 metadata.hostname
             - 替换 spec.podCIDR
             - 替换 spec.podCIDRs
-- 修改kube-proxy配置；-------------待考证；(操作顺序？先改node再改控制组件？)
+- 修改kube-proxy配置；~~ -------------待考证；(操作顺序？先改node再改控制组件？)~~
     - clusterCIDR
-- ~~修改kubeadm-config配置;-------------待考证；(操作顺序？先改node再改控制组件？;且是不是只要这里做操作就好，别的组件会监听到这个配置的变更，前提是使用kubeadm部署？)~~
+- 修改kubeadm-config配置;~~ -------------待考证；(操作顺序？先改node再改控制组件？;且是不是只要这里做操作就好，别的组件会监听到这个配置的变更，前提是使用kubeadm部署？)~~
     - podSubnet 
-- 修改kube-controller-manager配置; -------------待考证；(操作顺序？先改node再改控制组件？)
+- ~~修改kube-controller-manager配置; ~~ -------------待考证；(操作顺序？先改node再改控制组件？)~~
     - spec.containers.command[cluster-cidr]
 - 修改 /etc/cni/net.d/ 下的 10-calico.conflist和calico-kubeconfig 配置；-------------待考证；(网络上有文档提到该步骤，很怀疑这部操作的必要性，尤其是caico-kubeconfig，这个文件的作用不包括放cidr的配置吧？)
     - ipv4_pools
 
 ### 更改CIDR的方案验证
 - 添加新的ippool并停用就CIDR(使用的calicoctl操作,kubectl edit 操作应该没区别？)
-    - 并未对目前现有的集群造成任何影响
+    - 并未对目前现有的集群造成任何影响；
     - 之后副本集内的容器状态出现变更，新创建的容器地址段均为新的地址段
     - 新地址段容器与新地址段容器网络通信正常
     - 新地址段容器与旧地址段容器网络通信正常
     - 旧地址段容器与旧地址段容器网络通信未知(旧地址段镜像太赶紧，容器内无法做相关验证操作)
-        - 之后集群重建再测试的时候再测；-------------待考证；
+        - 之后集群重建再测试的时候再测；-------------待考证；猜测大概率也是正常的；
 - 改kubeadm-config配置;
     - 更改配置后集群内的相关的配置未发生任何变化；
     - 变更操作还是有必要做；
         - kubeadm支持导出集群初始化配置；怀疑命令的结果就是取kubeadm的configmap配置文件；
         - 考虑到集群的运维操作(升级，恢复等)，该数据的变更还是有必要记录；
+- 修改kube-proxy配置；
+    - 并未对目前现有的集群造成任何影响；集群也没有发生任何变化；
+    - 变更了配置/etc/kubernetes/manifests中的配置文件或者直接修改configmap，daemonset均未重启；
+        - 同级目录的api或者cm组件的如果更改了配置文件均会导致pod重新生成载入新的配置；
+        - 手动删除原pod，自动拉起新的正常；集群也未发生任何变化；
+        - 小插曲(过程中一台新加的node失联了，去机房看发现网卡停了，怀疑是机器本身的问题)
+
 
