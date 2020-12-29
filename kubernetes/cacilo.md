@@ -187,3 +187,19 @@
           E1229 09:17:41.673808       1 controllermanager.go:522] Error starting "nodeipam"
           F1229 09:17:41.673823       1 controllermanager.go:235] error starting controllers: failed to mark cidr[192.168.3.0/24] at idx [0] as occupied for node: node02: cidr 192.168.3.0/24 is out the range of cluster cidr 172.21.0.0/16
           ```
+        - 所以这一步一定要等待node的cidr配置全部更换完毕后，才能操作这一步；
+            - 这里解释一下，更改ippool其实已经达到更换网段的目标(接下来新起的都是在新网段，旧的容器重启也会用新的网段)；
+                - 但是在k8s的集群信息中，工作角色node的配置项依旧还是保留着旧的配置；目前只是没有影响到使用(实验集群相对简单，也没更多的使用外部的组件或者CRD)，实际的测试环境可能会有目前遇不到的场景，很有可能会出现异常；
+            - 为了变更的彻底，这步应该还是要做的；
+                - node更换cidr目前试下来没有好的办法
+                    - node的cidr配置字段，并不允许更改；比较直接有效的方式是滚动踢出重新加入集群；
+- 踢出并重加集群
+    - 
+
+### 变更方案的总结
+- 添加新的ippool并停用就CIDR
+- 改kubeadm-config配置;
+- 修改kube-proxy配置；
+- 滚动踢出重加节点；
+- 修改kube-contrller-mannager
+
