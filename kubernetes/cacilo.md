@@ -169,7 +169,7 @@
     - 旧地址段容器与旧地址段容器网络通信未知(旧地址段镜像太赶紧，容器内无法做相关验证操作)
         - 之后集群重建再测试的时候再测；-------------待考证；猜测大概率也是正常的；
 - 改kubeadm-config配置;
-    - 更改配置后集群内的相关的配置未发生任何变化；
+    - 并未对目前现有的集群造成任何影响；集群也没有发生任何变化；
     - 变更操作还是有必要做；
         - kubeadm支持导出集群初始化配置；怀疑命令的结果就是取kubeadm的configmap配置文件；
         - 考虑到集群的运维操作(升级，恢复等)，该数据的变更还是有必要记录；
@@ -179,5 +179,11 @@
         - 同级目录的api或者cm组件的如果更改了配置文件均会导致pod重新生成载入新的配置；
         - 手动删除原pod，自动拉起新的正常；集群也未发生任何变化；
         - 小插曲(过程中一台新加的node失联了，去机房看发现网卡停了，怀疑是机器本身的问题)
-
-
+- 修改kube-controller-manager配置;
+    - 修改后，服务不断重启；
+        - 能短暂启动running；但是读取到node配置时会报错;读取到node的cidr值与新配置的cluster-cidr的值不符；
+        - ```
+          I1229 09:17:41.673773       1 range_allocator.go:116] No Secondary Service CIDR provided. Skipping filtering out secondary service addresses.
+          E1229 09:17:41.673808       1 controllermanager.go:522] Error starting "nodeipam"
+          F1229 09:17:41.673823       1 controllermanager.go:235] error starting controllers: failed to mark cidr[192.168.3.0/24] at idx [0] as occupied for node: node02: cidr 192.168.3.0/24 is out the range of cluster cidr 172.21.0.0/16
+          ```
