@@ -18,7 +18,7 @@
 - BIRD（BIRD Internet Routing Daemon） 
     - 是一个常用的网络路由软件，支持很多路由协议（BGP、RIP、OSPF等）。它会在每台宿主机上运行，calico 用它在实现主机间传播路由信息。
     - BIRD 对应的配置文件在 /etc/calico/confd/config/ 目录;
-       - kubeadm默认的etcd部署方式(也未用自定义配置)，并未找到该路径以及相关的的数据；~~ -------------待考证；~~
+       - ~~kubeadm默认的etcd部署方式(也未用自定义配置)，并未找到该路径以及相关的的数据；-------------待考证；~~
             - 相关的配置在daemonset的node找到了
        - ~~只在calico的daemonset的node里找到了 confd 文件夹和 felix.cfg~~
 
@@ -138,7 +138,7 @@
         resourceVersion: "xx"
        ```
     - 添加配置 disabled: true；停用旧的CIDR
-- 滚动替换node-CIDR参数;~~ -------------待考证；(具体的操作方案) ~~
+- ~~滚动替换node-CIDR参数;-------------待考证；(具体的操作方案)~~
     - 以下都是目前的假设
         - 导出机器列表
         - 规划机器对应IP的map关系，比如
@@ -151,13 +151,13 @@
             - 替换 metadata.hostname
             - 替换 spec.podCIDR
             - 替换 spec.podCIDRs
-- 修改kube-proxy配置；~~ -------------待考证；(操作顺序？先改node再改控制组件？)~~
+- 修改kube-proxy配置；~~-------------待考证；(操作顺序？先改node再改控制组件？)~~ 
     - clusterCIDR
-- 修改kubeadm-config配置;~~ -------------待考证；(操作顺序？先改node再改控制组件？;且是不是只要这里做操作就好，别的组件会监听到这个配置的变更，前提是使用kubeadm部署？)~~
+- 修改kubeadm-config配置;~~-------------待考证；(操作顺序？先改node再改控制组件？;且是不是只要这里做操作就好，别的组件会监听到这个配置的变更，前提是使用kubeadm部署？)~~
     - podSubnet 
-- ~~修改kube-controller-manager配置; ~~ -------------待考证；(操作顺序？先改node再改控制组件？)~~
+- ~~修改kube-controller-manager配置; -------------待考证；(操作顺序？先改node再改控制组件？)~~
     - spec.containers.command[cluster-cidr]
-- 修改 /etc/cni/net.d/ 下的 10-calico.conflist和calico-kubeconfig 配置；-------------待考证；(网络上有文档提到该步骤，很怀疑这部操作的必要性，尤其是caico-kubeconfig，这个文件的作用不包括放cidr的配置吧？)
+- ~~修改 /etc/cni/net.d/ 下的 10-calico.conflist和calico-kubeconfig 配置；-------------待考证；(网络上有文档提到该步骤，很怀疑这部操作的必要性，尤其是caico-kubeconfig，这个文件的作用不包括放cidr的配置吧？)~~ 不用操作
     - ipv4_pools
 
 ### 更改CIDR的方案验证
@@ -179,7 +179,7 @@
         - 同级目录的api或者cm组件的如果更改了配置文件均会导致pod重新生成载入新的配置；
         - 手动删除原pod，自动拉起新的正常；集群也未发生任何变化；
         - 小插曲(过程中一台新加的node失联了，去机房看发现网卡停了，怀疑是机器本身的问题)
-- 修改kube-controller-manager配置;
+- ~~修改kube-controller-manager配置; ~~这一步经过实践发现需要在所有节点配置完成之后才能操作；
     - 修改后，服务不断重启；
         - 能短暂启动running；但是读取到node配置时会报错;读取到node的cidr值与新配置的cluster-cidr的值不符；
         - ```
@@ -200,27 +200,35 @@
                         - 该种方式不用驱逐调度容器；操作起来速度更快；
                         - 命令合并成一条(以免中间时间过长，节点数据可能发生变化)
                             - 也可在操作该条命令前cordon该node节点(保证不会有新的容器被调度过来)；操作完成再uncordon该node节点；
-- 踢出并重加集群
-    - 禁止新的pod被调度到该node   
-    ```
-    kubectl  cordon node02
-    ```
-    - 将该node上的容器全部驱逐(除了daemonset)
-    ```
-    kubectl drain node02 --delete-local-data --force --ignore-daemonsets
-    ```
-    - master 上查看hash值
-    ```
-    openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^ .* //'
-    ```
-    - master 上创建新的token(kubeadm的token默认有效期24小时)
-    ```
-    kubeadm token create
-    ```
-    - 把hash和toekn套入进命令
-    ```
-    ubeadm join xxx.xxx.xx.xxx:6443 --token xxx.xxx --discovery-token-ca-cert-hash sha256:xxx
-    ```
+- ~~踢出并重加集群~~
+    - ~~禁止新的pod被调度到该node~~   
+        ```
+            kubectl  cordon node02
+        ```
+    - ~~将该node上的容器全部驱逐(除了daemonset)~~
+        ```
+            kubectl drain node02 --delete-local-data --force --ignore-daemonsets
+        ```
+    - ~~master 上查看hash值~~
+        ```
+            openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^ .* //'
+        ```
+    - ~~master 上创建新的token(kubeadm的token默认有效期24小时)~~
+        ```
+            kubeadm token create
+        ```
+    - ~~把hash和toekn套入进命令~~
+        ```
+            ubeadm join xxx.xxx.xx.xxx:6443 --token xxx.xxx --discovery-token-ca-cert-hash sha256:xxx
+        ```
+- 用导出配置再重新导入的方式修改节点(逻辑上依旧是删除节点再重新加入)；
+    - 先收集整理节点的名称以及对应的原cidr与新的cidr配置；
+    - 用以上信息替换掉命令重的对应值(例：192段是原cidr，172段是新的cidr)；
+        ```
+            kubectl get no 节点名称 -o yaml > file.yaml; sed -i "s~192.168.2.0/24~172.21.2.0/24~" file.yaml; kubectl delete no 节点名称 && kubectl create -f file.yaml 
+        ```
+- 修改CM配置；此时再修改，不会再出现异常报错服务停止运行的情况；
+- 删除旧的ippool；至此更换cidr的操作已完成；
 ### 变更方案的总结
 - 添加新的ippool并停用就CIDR
 - 改kubeadm-config配置;
