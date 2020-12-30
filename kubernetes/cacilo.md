@@ -182,7 +182,7 @@
 - ~~修改kube-controller-manager配置;~~
     - 这一步经过实践发现需要在所有节点配置完成之后才能操作；
     - 修改后，服务不断重启；
-        - 能短暂启动running；但是读取到node配置时会报错;读取到node的cidr值与新配置的cluster-cidr的值不符；
+        - CM能短暂启动running；但是读取到node配置时会报错;读取到node的cidr值与新配置的cluster-cidr的值不符；
         - ```
           I1229 09:17:41.673773       1 range_allocator.go:116] No Secondary Service CIDR provided. Skipping filtering out secondary service addresses.
           E1229 09:17:41.673808       1 controllermanager.go:522] Error starting "nodeipam"
@@ -230,10 +230,10 @@
         ```
 - 修改CM配置；此时再修改，不会再出现异常报错服务停止运行的情况；
 - 删除旧的ippool；至此更换cidr的操作已完成；
-### 变更方案的总结
-- 添加新的ippool并停用就CIDR
+    - 操作完成可以去kube-system的ns下的calico-node的daemonset容器中确认数据是否真的更新(/etc/calico/);
+### 变更方案总结-操作具体步骤(顺序执行)
+- 添加新的ippool并停用旧的CIDR
 - 改kubeadm-config配置;
 - 修改kube-proxy配置；
-- 滚动踢出重加节点；
-- 修改kube-contrller-mannager
-
+- 滚动踢出重加节点(使用原配置重建的方式,遍历所有节点，先node后master)；
+- 修改kube-contrller-mannager;
