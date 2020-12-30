@@ -192,10 +192,35 @@
                 - 但是在k8s的集群信息中，工作角色node的配置项依旧还是保留着旧的配置；目前只是没有影响到使用(实验集群相对简单，也没更多的使用外部的组件或者CRD)，实际的测试环境可能会有目前遇不到的场景，很有可能会出现异常；
             - 为了变更的彻底，这步应该还是要做的；
                 - node更换cidr目前试下来没有好的办法
-                    - node的cidr配置字段，并不允许更改；比较直接有效的方式是滚动踢出重新加入集群；
+                    - ~~node的cidr配置字段，并不允许更改；比较直接有效的方式是滚动踢出重新加入集群；~~
+                    - 上面的方法不可行，踢出重新加入的逻辑没错，得换种方法；
+                        - 不更改CM配置,直接冲重加节点，实践的结果是node的CIDR并未发生变化;
+                        - 先更改CM配置，又会导致CM出现异常，在所有的节点替换好之前都是长期不可用的状态(短暂可用，读取到还未替换的node节点就会报错停止服务)；
+                    - 需要使用命令先将node配置导出，修改其中的cidr，再以该文件重新创建节点；
+                        - 该种方式不用驱逐调度容器；操作起来速度更快；
+                        - 命令合并成一条(以免中间时间过长，节点数据可能发生变化)
+                            - 也可在操作该条命令前cordon该node节点(保证不会有新的容器被调度过来)；操作完成再uncordon该node节点；
 - 踢出并重加集群
-    - 
-
+    - 禁止新的pod被调度到该node   
+    ```
+    kubectl  cordon node02
+    ```
+    - 将该node上的容器全部驱逐(除了daemonset)
+    ```
+    kubectl drain node02 --delete-local-data --force --ignore-daemonsets
+    ```
+    - master 上查看hash值
+    ```
+    openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^ .* //'
+    ```
+    - master 上创建新的token(kubeadm的token默认有效期24小时)
+    ```
+    kubeadm token create
+    ```
+    - 把hash和toekn套入进命令
+    ```
+    ubeadm join xxx.xxx.xx.xxx:6443 --token xxx.xxx --discovery-token-ca-cert-hash sha256:xxx
+    ```
 ### 变更方案的总结
 - 添加新的ippool并停用就CIDR
 - 改kubeadm-config配置;
