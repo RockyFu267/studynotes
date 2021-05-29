@@ -210,7 +210,7 @@
       iptables -t filter -A FORWARD -o vethhost02 -j ACCEPT
   ```
   ![FORWARD“关卡”的filter类型规则已添加](pics/net-ns/FORWARD-2.png)
-* 验证
+* 验证  
 ![demo01/02双向已互通](pics/net-ns/ping-0102.png) 
 
 ## 跨主机通信(实现demo01/02与其他主机互通)
@@ -218,7 +218,7 @@
   * node02并不知道要访问10.0.1.2/10.0.2.2在node03上，需要在node02上添加相关路由，将目的地址的下一跳指向node03(100.100.198.250)
   * node02和node03在本就互通(且在同一网段)，所以node03上不用添加任何路由和iptables相关配置
   ![node02的路由](pics/net-ns/ping-node02-route.png)
-* 验证
+* 验证  
 ![node02-->demo01/02](pics/net-ns/ping-node02-1.png)
 ![demo01/02-->node02](pics/net-ns/ping-node02-2.png)
 ![在node02上抓包，显示的源地址就是demo01/02](pics/net-ns/ping-node02-3.png) 
