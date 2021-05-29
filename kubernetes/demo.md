@@ -43,8 +43,8 @@
   * 通过第一条命令可以看到该namespace下只有一块lo网卡，且该网卡是关闭状态(可以在host主机网络空间直接执行"ip addr"观察两者区别)
   * 通过第二条命令可以开启该网卡
   ```bash
-      ip netns exec demo01 ip addr      #ip netns exec demo01 <需要执行的命令>可以实现对demo01的相关操作，也可以通过“ip netns exec demo01 /bin/bash”进入到demo01的虚拟网络环境中之后，再直接通过执行命命令的方式操作；操作完成需要退出至主机网络空间，需执行exit
-      ip netns exec demo01 ip link set lo up                 #开启lo网卡,lo网卡自动绑定127.0.0.1
+      ip netns exec demo01 ip addr   #ip netns exec demo01 <需要执行的命令>可以实现对demo01的相关操作，也可以通过“ip netns exec demo01 /bin/bash”进入到demo01的虚拟网络环境中之后，再直接通过执行命命令的方式操作；操作完成需要退出至主机网络空间，需执行exit
+      ip netns exec demo01 ip link set lo up   #开启lo网卡,lo网卡自动绑定127.0.0.1
   ```
   ![demo01-lo网卡已启动](pics/net-ns/demo01-1.png)
 * 至此，一个新的network-namespace demo01已经创建完成
